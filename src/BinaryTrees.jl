@@ -6,6 +6,7 @@ Node,
 Branch,
 BinaryTree,
 DepthFirst,
+BreadthFirst,
 left,
 right,
 data
