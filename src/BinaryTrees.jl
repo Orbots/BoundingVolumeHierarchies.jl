@@ -78,4 +78,9 @@ end
 
 Base.length(iter::BreadthFirst{T}) where T = length(DepthFirst(iter.tree))
 
+"""
+  search nodes until ftest passes 
+"""
+search( ftest::Function, tree::Node{T} ) where T = Iterators.filter(ftest,tree) |> first
+
 end
