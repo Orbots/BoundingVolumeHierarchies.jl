@@ -10,5 +10,6 @@ using Base.Iterators
   @test drop(DepthFirst(t),2) |> first == -3 
   @test drop(BreadthFirst(t),2) |> first == 2 
   @test reduce(vcat,BreadthFirst(t)) == [1, -2, 2, -3, 3, 4, -4]
+  @test search(iseven,t) == -2
 end
 
