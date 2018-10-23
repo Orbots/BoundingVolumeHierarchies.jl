@@ -4,3 +4,6 @@ Collision query acceleration structures.
 * loose AABBTree
 * OOBBtree
 
+
+currently not built for performance
+
