@@ -11,6 +11,7 @@ BinaryTree,
 DepthFirst,
 BreadthFirst,
 BinarySearch,
+Leaves,
 empty_node,
 left,
 right,
@@ -48,6 +49,8 @@ struct DepthFirst{T}
 end
 
 rest(a::Vector{T}) where T = Vector{T}(a[2:end])
+
+isleaf(a::Node{T}) where T = (left(a) == empty_node && right(a) == empty_node)
 
 #==== DepthFirst Traversal ===#
 function Base.iterate(iter::DepthFirst{T}, children::Vector{Node{T}}) where T
@@ -93,14 +96,15 @@ struct BinarySearch{T}
   comparison::Function
 end
 
-BinarySearch(tree::BinaryTree{T}, data::T) where {T} = BinarySearch{T}(tree, x->data < x)
+BinarySearch(tree::BinaryTree{T}, d::T) where {T} = BinarySearch{T}(tree, x->d < data(x))
 
+#!me Union{BinaryTree{T},EmptyNode} can be Branch{T}, no?  what purpose does BinaryTree type serve?  
 function Base.iterate(iter::BinarySearch{T}, subtree::Union{Node{T}, EmptyNode}) where T
   if subtree == empty_node 
     return nothing
   end
 
-  if iter.comparison(data(subtree))
+  if iter.comparison(subtree)
     ((subtree,:left), left(subtree))
   else
     ((subtree,:right), right(subtree))
@@ -113,13 +117,40 @@ end
 
 Base.length(iter::BinarySearch{T}) where T = reduce( (acc,_)->acc+1, iter; init=0)
 
+#===== Leaf Traversal ===#
+Leaves( a::Node{T}, descend::Function = x->true ) where {T} = Channel(ctype=Node{T}) do c
+  nodestack = Vector{Node{T}}()
+
+  if descend(a)
+    push!(nodestack,a)
+  end
+
+  while( !isempty(nodestack) )
+    ancestor = pop!(nodestack)
+
+    if( isleaf(ancestor) )
+      push!(c, ancestor)
+    else  
+      childL = left(ancestor)
+      childR = right(ancestor)
+
+      if childR != empty_node && descend(childR)
+        push!(nodestack,childR)
+      end
+      if childL != empty_node && descend(childL)
+        push!(nodestack,childL)
+      end
+    end
+  end
+end
+
 """
   search nodes until ftest passes 
 """
 search( ftest::Function, tree::Node{T} ) where T = Iterators.filter(ftest,tree) |> first
 
 """
-  return a new tree with new node inserted on branch where data < parent.data
+  return a new tree with new node inserted on branch where data < parent.data decends to left
 """
 insert( t::BinaryTree{T}, d::T ) where T = 
   reduce( (n,(sn,direction))->
