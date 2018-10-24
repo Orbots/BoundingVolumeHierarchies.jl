@@ -14,6 +14,9 @@ using Base.Iterators
   @test drop(BreadthFirst(t),2) |> first |> data == 2 
   @test data.(reduce(vcat,BreadthFirst(t))) == [1, -2, 2, -3, 3, 4, -4]
   @test search(iseven∘data,t) |> data == -2
+
+  animaltree = reduce(insert,["dog","dawg","kawt","awnt"]; init = insert("cat")) 
+  @test map(data, Leaves(animaltree)) == ["awnt","dawg","kawt"]
 end
 
 
