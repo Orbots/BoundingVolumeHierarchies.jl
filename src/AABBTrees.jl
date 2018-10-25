@@ -61,6 +61,6 @@ function insert( t::AABBNode{T,S}, d::AABBNodeData{T,S} ) where {T,S}
          init=twig)
 end
 
-ipislessnsert( t::AABBNode{T,S}, aabb::AABB{T}, entity::S ) where {T,S} = insert( t, AABBNodeData(aabb, entity) )
+insert( t::AABBNode{T,S}, aabb::AABB{T}, entity::S ) where {T,S} = insert( t, AABBNodeData(aabb, entity) )
 
 end
