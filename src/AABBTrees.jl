@@ -2,7 +2,9 @@ module AABBTrees
 export
 AABBNode,
 AABBNodeData,
-insert
+insert,
+entity,
+query
 
 using BinaryTrees
 import BinaryTrees.insert
@@ -23,7 +25,10 @@ struct AABBNodeData{T,S}
   entity::S  #!me union of parent pointer and entityID?  entity only relevant at leaf
 end
 
+
 const AABBNode{T,S} = Node{AABBNodeData{T,S}}
+
+entity(n::AABBNode{T,S}) where {T,S} = data(n).entity
 
 # true means take left branch
 function branch_compare( aabb::AABB{T}, n::AABBNode{T,S} ) where {T,S}
@@ -62,5 +67,7 @@ function insert( t::AABBNode{T,S}, d::AABBNodeData{T,S} ) where {T,S}
 end
 
 insert( t::AABBNode{T,S}, aabb::AABB{T}, entity::S ) where {T,S} = insert( t, AABBNodeData(aabb, entity) )
+
+query( t::AABBNode{T,S}, qaabb::AABB{T} ) where {T,S} = entity.(Leaves(t,n->overlaps(data(n).aabb, qaabb ))) 
 
 end
