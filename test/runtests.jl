@@ -2,6 +2,7 @@ using Test
 using BinaryTrees
 using AxisAlignedBoundingBoxes
 using AxisAlignedBoundingBoxes: Vector3
+using AABBTrees
 
 using Base.Iterators
 
@@ -32,3 +33,14 @@ end
   @test contains(AABB(o,a),AABB(o,a)) == true
 end
 
+@testset "AABBTree" begin
+  t = insert(AABBNodeData(AABBs.randAABB(),1))
+  t = insert(t,AABBNodeData(AABBs.randAABB(),2))
+  t = insert(t,AABBNodeData(AABBs.randAABB(),3))
+  t = insert(t,AABBNodeData(AABBs.randAABB(),4))
+  t = insert(t,AABBNodeData(AABBs.randAABB(),5))
+  @test contains((t |> data |> x->x.aabb), (t |> left |> data |> x->x.aabb))
+  @test contains((t |> data |> x->x.aabb), (t |> left |> right |> data |> x->x.aabb))
+  @test contains((t |> left |> data |> x->x.aabb), (t |> left |> right |> data |> x->x.aabb))
+
+end

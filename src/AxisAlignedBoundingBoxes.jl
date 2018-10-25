@@ -2,12 +2,13 @@ module AxisAlignedBoundingBoxes
 const AABBs = AxisAlignedBoundingBoxes
 
 export
+AABBs,
 AABB,
-createAABB,
 overlaps,
 contains,
 inflate,
-volume
+volume,
+refit
 
 
 using StaticArrays
@@ -30,6 +31,16 @@ function AABB( minx::T, maxx::T, miny::T, maxy::T, minz::T, maxz::T ) where {T}
   AABB(Vector3([minx, miny, minz]), Vector3([maxx, maxy, maxz]))
 end
 
+function refit( aabb::AABB{T} ) where T
+  a = aabb.min
+  b = aabb.max
+  @inbounds AABB(Vector3(min(a[1],b[1]), min(a[2],b[2]), min(a[3],b[3])),
+                 Vector3(max(a[1],b[1]), max(a[2],b[2]), max(a[3],b[3])))
+end
+
+randAABB(r = 0:0.001:1) = refit(AABB(rand(r), rand(r), rand(r), rand(r), rand(r), rand(r)))
+
+#==
 """
 make an AABB out of a triangle ( 3 points )
 """
@@ -62,6 +73,8 @@ function createAABB( a::Vector3{T}, b::Vector3{T} ) where {T}
                      min(a[2],b[2]), max(a[2],b[2]), 
                      min(a[3],b[3]), max(a[3],b[3])); r
 end
+==#
+
 """
 """
 function union( a::AABB{T}, b::AABB{T} ) where {T}
